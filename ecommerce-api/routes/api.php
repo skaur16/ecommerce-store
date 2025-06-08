@@ -1,36 +1,36 @@
 <?php
+require_once '../controllers/ProductController.php';
+require_once '../controllers/UserController.php';
+require_once '../controllers/CommentController.php';
+require_once '../controllers/CartController.php';
+require_once '../controllers/OrderController.php';
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\CommentController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\OrderController;
+// Parse the request
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$method = $_SERVER['REQUEST_METHOD'];
 
-// Product routes
-Route::post('/products', [ProductController::class, 'createProduct']);
-Route::get('/products/{id}', [ProductController::class, 'getProduct']);
-Route::put('/products/{id}', [ProductController::class, 'updateProduct']);
-Route::delete('/products/{id}', [ProductController::class, 'deleteProduct']);
+// Example: /api/products/1
+$uriParts = explode('/', trim($uri, '/'));
 
-// User routes
-Route::post('/users/register', [UserController::class, 'registerUser']);
-Route::post('/users/login', [UserController::class, 'loginUser']);
-Route::get('/users/{id}', [UserController::class, 'getUser']);
-Route::put('/users/{id}', [UserController::class, 'updateUser']);
-
-// Comment routes
-Route::post('/comments', [CommentController::class, 'addComment']);
-Route::get('/comments/{productId}', [CommentController::class, 'getComments']);
-Route::delete('/comments/{id}', [CommentController::class, 'deleteComment']);
-
-// Cart routes
-Route::post('/cart', [CartController::class, 'addToCart']);
-Route::get('/cart/{userId}', [CartController::class, 'getCart']);
-Route::put('/cart/{userId}', [CartController::class, 'updateCart']);
-Route::delete('/cart/{userId}/{itemId}', [CartController::class, 'removeFromCart']);
-
-// Order routes
-Route::post('/orders', [OrderController::class, 'createOrder']);
-Route::get('/orders/{id}', [OrderController::class, 'getOrder']);
-Route::delete('/orders/{id}', [OrderController::class, 'cancelOrder']);
+if ($uriParts[0] === 'api') {
+    switch ($uriParts[1]) {
+        case 'products':
+            $controller = new ProductController();
+            if ($method === 'GET' && isset($uriParts[2])) {
+                $controller->getProduct($uriParts[2]);
+            }
+            // Add other product routes here...
+            break;
+        case 'users':
+            $controller = new UserController();
+            // Add user routes here...
+            break;
+        // Add other cases for comments, cart, orders...
+        default:
+            http_response_code(404);
+            echo json_encode(['error' => 'Not found']);
+    }
+} else {
+    http_response_code(404);
+    echo json_encode(['error' => 'Not found']);
+}

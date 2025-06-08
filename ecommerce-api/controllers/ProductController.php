@@ -1,20 +1,35 @@
 <?php
+require_once __DIR__ . '/../models/Product.php';
 
 class ProductController {
-    
-    public function createProduct($data) {
-        // Logic to create a new product
+    private $db;
+    private $productModel;
+
+    public function __construct($db) {
+        $this->db = $db;
+        $this->productModel = new Product($this->db);
     }
 
-    public function getProduct($id) {
-        // Logic to retrieve a product by its ID
+    // Get all products (for product listing page)
+    public function getAllProducts() {
+        $result = $this->productModel->getAll();
+        return $result->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function updateProduct($id, $data) {
-        // Logic to update an existing product
+    // Get one product (for index/featured page)
+    public function getSingleProduct() {
+        $stmt = $this->productModel->getAll();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function deleteProduct($id) {
-        // Logic to delete a product by its ID
+    // Get a product by its ID (for details page)
+    public function getProductById($id) {
+        $result = $this->productModel->getById($id);
+        return $result->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Create a product (optional: for admin functionality)
+    public function createProduct($description, $image, $price, $shippingCost) {
+        return $this->productModel->create($description, $image, $price, $shippingCost);
     }
 }
