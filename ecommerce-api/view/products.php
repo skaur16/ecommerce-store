@@ -1,4 +1,3 @@
-
 <?php include __DIR__ . '/header.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -263,4 +262,6 @@
 </div>
 
 </body>
+<?php include __DIR__ . '/footer.php'; ?>
 </html>
+
