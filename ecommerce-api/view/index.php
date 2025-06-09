@@ -159,13 +159,13 @@ $product = $controller->getSingleProduct();
 <!-- 3 Picture Cards, No Description -->
 <div class="books-row">
     <div class="book-card">
-        <img src="../images/book1.jpeg" alt="Book 1" />
+        <img src="../images/book6.webp" alt="Book 1" />
     </div>
     <div class="book-card">
-        <img src="../images/book2.jpeg" alt="Book 2" />
+        <img src="../images/book11.webp" alt="Book 2" />
     </div>
     <div class="book-card">
-        <img src="../images/book2.jpeg" alt="Book 3" />
+        <img src="../images/book10.webp" alt="Book 3" />
     </div>
 </div>
 
