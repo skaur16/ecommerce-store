@@ -1,3 +1,23 @@
+<?php
+session_start();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Fetch user from DB using $_POST['email']
+    // Example:
+    // $user = getUserByEmail($_POST['email']);
+    // if ($user && password_verify($_POST['password'], $user['password'])) {
+
+    // Replace with your actual DB check:
+    if ($_POST['email'] === 'user@example.com' && $_POST['password'] === 'password123') {
+        $_SESSION['user_id'] = 1; // Replace with real user ID
+        $_SESSION['username'] = 'John Doe'; // Replace with real username
+        header("Location: index.php");
+        exit;
+    } else {
+        $error = "Invalid email or password.";
+    }
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -93,7 +113,7 @@
         <?php if (!empty($success)): ?>
             <p class="success"><?= htmlspecialchars($success) ?></p>
         <?php endif; ?>
-        <form action="?url=user/login" method="POST">
+        <form action="/ecommerce-store/ecommerce-api/view/index.php" method="POST">
             <label>Email:</label>
             <input type="email" name="email" required>
 

@@ -1,3 +1,22 @@
+<?php
+session_start();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Example: Save user to DB and get their ID and username
+    // Replace the next two lines with your actual DB logic
+    $newUserId = 123; // Example: the new user's ID from your DB
+    $newUsername = $_POST['username'];
+
+    // Set session variables
+    $_SESSION['user_id'] = $newUserId;
+    $_SESSION['username'] = $newUsername;
+
+    // Redirect to home or dashboard
+    header("Location: login.php");
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -90,7 +109,7 @@
         <?php if (!empty($error)) echo "<p class='error'>".htmlspecialchars($error)."</p>"; ?>
         <?php if (!empty($success)) echo "<p class='success'>".htmlspecialchars($success)."</p>"; ?>
 
-        <form action="/online_store/public/index.php?url=user/signup" method="POST">
+        <form action="/ecommerce-store/ecommerce-api/view/signup.php" method="POST">
             <label>Username: </label>
             <input type="text" name="username" required>
 
