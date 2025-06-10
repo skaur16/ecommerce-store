@@ -53,8 +53,8 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 <h3>All Comments</h3>
 
 <?php
-require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../models/Comment.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../models/Comment.php';
 
 $db = (new Database())->getConnection();
 $commentModel = new Comment($db);

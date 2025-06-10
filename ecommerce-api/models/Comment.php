@@ -19,4 +19,10 @@ class Comment {
         $stmt->execute([$productId]);
         return $stmt;
     }
+
+    public function getCommentsByProduct($productID) {
+        $stmt = $this->conn->prepare("SELECT * FROM comments WHERE productID = :productID ORDER BY created_at DESC");
+        $stmt->execute(['productID' => $productID]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
