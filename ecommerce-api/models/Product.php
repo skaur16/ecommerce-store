@@ -12,7 +12,7 @@ class Product {
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         
-        return $stmt;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getProductById($id) {
@@ -40,5 +40,16 @@ class Product {
         $query = "DELETE FROM $this->table WHERE productID = ?";
         $stmt = $this->conn->prepare($query);
         return $stmt->execute([$id]);
+    }
+
+    // In your Product model (App/Models/Product.php)
+    public function getById($productId)
+    {
+        $query = "SELECT * FROM products WHERE productID = :productId";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':productId', $productId);
+        $stmt->execute();
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }

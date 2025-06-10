@@ -1,20 +1,14 @@
 <?php
-
 namespace App\Controllers;
 
-use App\Models\Cart;
-
-class CartController
-{
+class CartController {
     protected $cartModel;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->cartModel = new Cart();
     }
 
-    public function addToCart($userId, $productId, $quantity)
-    {
+    public function addToCart($userId, $productId, $quantity) {
         // Logic to add item to cart
         return $this->cartModel->addItem($userId, $productId, $quantity);
     }

@@ -8,45 +8,85 @@ class Cart {
     }
 
     public function addToCart($userId, $productId, $quantity) {
-        // Check if product already in cart for user
-        $query = "SELECT quantity FROM $this->table WHERE userID = ? AND productID = ?";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute([$userId, $productId]);
-        $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+        try {
+            // Check if product already in cart for user
+            $query = "SELECT quantity FROM $this->table WHERE userID = ? AND productID = ?";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute([$userId, $productId]);
+            $existing = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($existing) {
-            // Update quantity
-            $newQty = $existing['quantity'] + $quantity;
-            $updateQuery = "UPDATE $this->table SET quantity = ? WHERE userID = ? AND productID = ?";
-            $updateStmt = $this->conn->prepare($updateQuery);
-            return $updateStmt->execute([$newQty, $userId, $productId]);
-        } else {
-            // Insert new row
-            $insertQuery = "INSERT INTO $this->table (userID, productID, quantity) VALUES (?, ?, ?)";
-            $insertStmt = $this->conn->prepare($insertQuery);
-            return $insertStmt->execute([$userId, $productId, $quantity]);
+            if ($existing) {
+                // Update quantity
+                $newQty = $existing['quantity'] + $quantity;
+                $updateQuery = "UPDATE $this->table SET quantity = ? WHERE userID = ? AND productID = ?";
+                $updateStmt = $this->conn->prepare($updateQuery);
+                $result = $updateStmt->execute([$newQty, $userId, $productId]);
+                if (!$result) {
+                    error_log("Error updating cart: " . print_r($updateStmt->errorInfo(), true));
+                    return false;
+                }
+                return true;
+            } else {
+                // Insert new row
+                $insertQuery = "INSERT INTO $this->table (userID, productID, quantity) VALUES (?, ?, ?)";
+                $insertStmt = $this->conn->prepare($insertQuery);
+                $result = $insertStmt->execute([$userId, $productId, $quantity]);
+                if (!$result) {
+                    error_log("Error inserting into cart: " . print_r($insertStmt->errorInfo(), true));
+                    return false;
+                }
+                return true;
+            }
+        } catch (PDOException $e) {
+            error_log("Database error in addToCart: " . $e->getMessage());
+            return false;
         }
     }
 
     public function getUserCart($userId) {
-        $query = "SELECT * FROM $this->table WHERE userID = ?";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute([$userId]);
-        return $stmt;
+        try {
+            $query = "SELECT * FROM $this->table WHERE userID = ?";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute([$userId]);
+            return $stmt;
+        } catch (PDOException $e) {
+            error_log("Database error in getUserCart: " . $e->getMessage());
+            return false;
+        }
     }
 
     public function updateQuantity($userId, $productId, $quantity) {
-        if ($quantity <= 0) {
-            return $this->removeItem($userId, $productId);
+        try {
+            if ($quantity <= 0) {
+                return $this->removeItem($userId, $productId);
+            }
+            $query = "UPDATE $this->table SET quantity = ? WHERE userID = ? AND productID = ?";
+            $stmt = $this->conn->prepare($query);
+            $result = $stmt->execute([$quantity, $userId, $productId]);
+            if (!$result) {
+                error_log("Error updating quantity: " . print_r($stmt->errorInfo(), true));
+                return false;
+            }
+            return true;
+        } catch (PDOException $e) {
+            error_log("Database error in updateQuantity: " . $e->getMessage());
+            return false;
         }
-        $query = "UPDATE $this->table SET quantity = ? WHERE userID = ? AND productID = ?";
-        $stmt = $this->conn->prepare($query);
-        return $stmt->execute([$quantity, $userId, $productId]);
     }
 
     public function removeItem($userId, $productId) {
-        $query = "DELETE FROM $this->table WHERE userID = ? AND productID = ?";
-        $stmt = $this->conn->prepare($query);
-        return $stmt->execute([$userId, $productId]);
+        try {
+            $query = "DELETE FROM $this->table WHERE userID = ? AND productID = ?";
+            $stmt = $this->conn->prepare($query);
+            $result = $stmt->execute([$userId, $productId]);
+            if (!$result) {
+                error_log("Error removing item: " . print_r($stmt->errorInfo(), true));
+                return false;
+            }
+            return true;
+        } catch (PDOException $e) {
+            error_log("Database error in removeItem: " . $e->getMessage());
+            return false;
+        }
     }
 }

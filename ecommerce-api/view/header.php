@@ -7,6 +7,29 @@ if (isset($_GET['logout'])) {
     header("Location: /ecommerce-store/ecommerce-api/view/index.php");
     exit;
 }
+
+// Get cart count
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../models/Cart.php';
+
+$database = new Database();
+$db = $database->getConnection();
+$cartModel = new Cart($db);
+
+$cartCount = 0;
+if (isset($_SESSION['user_id'])) {
+    // Logged-in user: count unique items from database
+    $cartItems = $cartModel->getUserCart($_SESSION['user_id']);
+    if ($cartItems) {
+        // Count number of rows (unique products)
+        $cartCount = $cartItems->rowCount();
+    }
+} else {
+    // Guest user: count unique items from session
+    if (isset($_SESSION['guest_cart']) && !empty($_SESSION['guest_cart'])) {
+        $cartCount = count($_SESSION['guest_cart']);
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -34,16 +57,16 @@ if (isset($_GET['logout'])) {
         .header {
             background: #ffffff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            padding: 15px 0;
             position: sticky;
             top: 0;
             z-index: 1000;
+            width: 100%;
         }
 
         .nav-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -152,8 +175,8 @@ if (isset($_GET['logout'])) {
                 
                 <a href="/ecommerce-store/ecommerce-api/view/cart.php" class="cart-icon">
                     🛒
-                    <?php if (isset($_SESSION['cart_count']) && $_SESSION['cart_count'] > 0): ?>
-                        <span class="cart-count"><?= $_SESSION['cart_count'] ?></span>
+                    <?php if ($cartCount > 0): ?>
+                        <span class="cart-count"><?= $cartCount ?></span>
                     <?php endif; ?>
                 </a>
             </div>

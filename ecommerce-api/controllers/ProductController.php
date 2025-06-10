@@ -12,20 +12,18 @@ class ProductController {
 
     // Get all products (for product listing page)
     public function getAllProducts() {
-        $result = $this->productModel->getAll();
-        return $result->fetchAll(PDO::FETCH_ASSOC);
+        return $this->productModel->getAll();
     }
 
     // Get one product (for index/featured page)
     public function getSingleProduct() {
-        $stmt = $this->productModel->getAll();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $products = $this->productModel->getAll();
+        return !empty($products) ? $products[0] : null;
     }
 
     // Get a product by its ID (for details page)
     public function getProductById($id) {
-        $result = $this->productModel->getById($id);
-        return $result->fetch(PDO::FETCH_ASSOC);
+        return $this->productModel->getById($id);
     }
 
     // Create a product (optional: for admin functionality)

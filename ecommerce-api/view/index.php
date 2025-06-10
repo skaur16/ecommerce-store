@@ -33,6 +33,31 @@ $database = new Database();
 $db = $database->getConnection();
 $controller = new ProductController($db);
 $product = $controller->getSingleProduct();
+
+// Initialize guest cart if not exists
+if (!isset($_SESSION['guest_cart'])) {
+    $_SESSION['guest_cart'] = [];
+}
+
+// Handle add to cart
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
+    $productId = intval($_POST['product_id']);
+    $quantity = max(1, intval($_POST['quantity']));
+    
+    if (isset($_SESSION['user_id'])) {
+        require_once __DIR__ . '/../models/Cart.php';
+        $cartModel = new Cart($db);
+        $cartModel->addToCart($_SESSION['user_id'], $productId, $quantity);
+    } else {
+        if (isset($_SESSION['guest_cart'][$productId])) {
+            $_SESSION['guest_cart'][$productId] += $quantity;
+        } else {
+            $_SESSION['guest_cart'][$productId] = $quantity;
+        }
+    }
+    header('Location: cart.php');
+    exit;
+}
 ?>
 
 <?php include __DIR__ . '/header.php'; ?>
@@ -199,54 +224,50 @@ $product = $controller->getSingleProduct();
     <img src="../images/hero.jpg" alt="Bookstore Hero" style="max-width:100%; height:auto;" />
 </div>
 
-<!-- Additional Content Start -->
-<div style="text-align:center; max-width:1200px; margin: 0 auto 40px auto; color:#333333;">
-    <h2 style="color:#4a90e2; margin-bottom: 40px;">Why Choose Our Cards?</h2>
-    
-    <div class="features-container">
-        <div class="feature-card">
-            <i class="fas fa-gem feature-icon"></i>
-            <h3>Premium Quality</h3>
-            <p>Our cards are crafted with high-quality materials and exquisite designs that stand out.</p>
-        </div>
-
-        <div class="feature-card">
-            <i class="fas fa-truck feature-icon"></i>
-            <h3>Express Delivery</h3>
-            <p>Get your cards delivered to your doorstep with our fast and reliable shipping service.</p>
-        </div>
-
-        <div class="feature-card">
-            <i class="fas fa-shield-alt feature-icon"></i>
-            <h3>Secure Transactions</h3>
-            <p>Shop with confidence knowing your payments and personal information are protected.</p>
-        </div>
-
-        <div class="feature-card">
-            <i class="fas fa-headset feature-icon"></i>
-            <h3>Personalized Service</h3>
-            <p>Our team is dedicated to helping you find the perfect card for any occasion.</p>
-        </div>
-    </div>
-
-    <p style="margin-top:30px; font-size:1.15em;">
-        <em>Browse our collection of beautiful cards below and find the perfect one for your special moments!</em>
-    </p>
-</div>
-<!-- Additional Content End -->
-
-<h1 class="featured-books-title" style="text-align:center;">Featured Books</h1>
-
-<!-- 3 Picture Cards, No Description -->
+<!-- Featured Book -->
+<?php if ($product): ?>
 <div class="books-row">
     <div class="book-card">
-        <img src="../images/book6.webp" alt="Book 1" />
+        <img src="<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['description']) ?>" />
+        <h2><?= htmlspecialchars($product['description']) ?></h2>
+        <p style="color:#6B46C1; font-weight:bold;">$<?= number_format($product['price'], 2) ?></p>
+        <form method="post" action="index.php">
+            <input type="hidden" name="product_id" value="<?= $product['productID'] ?>" />
+            <input type="number" name="quantity" value="1" min="1" />
+            <input type="submit" name="add_to_cart" value="Add to Cart" />
+        </form>
     </div>
-    <div class="book-card">
-        <img src="../images/book11.webp" alt="Book 2" />
+</div>
+<?php endif; ?>
+
+<!-- Why Shop With Us -->
+<div class="why-shop">
+    <h2>Why Shop With Us?</h2>
+    <ul>
+        <li>Wide selection of books across all genres</li>
+        <li>Fast and reliable shipping</li>
+        <li>Competitive prices</li>
+        <li>Secure payment options</li>
+        <li>Excellent customer service</li>
+    </ul>
+</div>
+
+<!-- Features -->
+<div class="features-container">
+    <div class="feature-card">
+        <div class="feature-icon">📚</div>
+        <h3>Extensive Collection</h3>
+        <p>Browse through thousands of titles across all genres</p>
     </div>
-    <div class="book-card">
-        <img src="../images/book10.webp" alt="Book 3" />
+    <div class="feature-card">
+        <div class="feature-icon">🚚</div>
+        <h3>Fast Shipping</h3>
+        <p>Get your books delivered quickly and safely</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">💰</div>
+        <h3>Great Prices</h3>
+        <p>Enjoy competitive prices and regular discounts</p>
     </div>
 </div>
 
