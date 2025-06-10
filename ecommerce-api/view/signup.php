@@ -1,5 +1,43 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_once __DIR__ . '/../config/database.php';
+
+    $db = (new Database())->getConnection();
+
+    $username = trim($_POST['username']);
+    $email = trim($_POST['email']);
+    $password = $_POST['password'];
+    $address = trim($_POST['address']);
+
+    // Check if email already exists
+    $stmt = $db->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt->execute([$email]);
+    if ($stmt->fetch()) {
+        $_SESSION['error'] = "Email already registered.";
+        header("Location: signup.php");
+        exit;
+    }
+
+    // Hash the password
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+    // Insert user
+    $stmt = $db->prepare("INSERT INTO users (username, email, password, shippingAddress) VALUES (?, ?, ?, ?)");
+    if ($stmt->execute([$username, $email, $hashedPassword, $address])) {
+        // Optionally log the user in automatically:
+        $_SESSION['user_id'] = $db->lastInsertId();
+        $_SESSION['username'] = $username;
+        header("Location: index.php");
+        exit;
+    } else {
+        $_SESSION['error'] = "Registration failed. Please try again.";
+        header("Location: signup.php");
+        exit;
+    }
+}
+
 include __DIR__ . '/header.php';
 ?>
 
