@@ -58,8 +58,8 @@ $cartItems = $cartItemsStmt->fetchAll(PDO::FETCH_ASSOC);
             display: flex;
             flex-direction: column;
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: #000814;
-            color: #FFD60A;
+            background: #ffffff;
+            color: #333333;
             padding: 20px;
         }
         main {
@@ -72,7 +72,7 @@ $cartItems = $cartItemsStmt->fetchAll(PDO::FETCH_ASSOC);
         }
         th, td {
             padding: 12px;
-            border-bottom: 1px solid #FFC300;
+            border-bottom: 1px solid #eaeaea;
             text-align: center;
         }
         img {
@@ -80,20 +80,20 @@ $cartItems = $cartItemsStmt->fetchAll(PDO::FETCH_ASSOC);
             height: 100px;
             object-fit: contain;
             border-radius: 6px;
-            border: 1px solid #003566;
-            background: #003566;
+            border: 1px solid #eaeaea;
+            background: #ffffff;
         }
         input[type="number"] {
             width: 60px;
             padding: 6px;
             border-radius: 4px;
-            border: 1px solid #FFC300;
-            background: #003566;
-            color: #FFD60A;
+            border: 1px solid #eaeaea;
+            background: #ffffff;
+            color: #333333;
         }
         button {
-            background: #FFC300;
-            color: #001d3d;
+            background: #6B46C1;
+            color: #ffffff;
             border: none;
             padding: 8px 12px;
             border-radius: 5px;
@@ -101,13 +101,12 @@ $cartItems = $cartItemsStmt->fetchAll(PDO::FETCH_ASSOC);
             font-weight: bold;
         }
         button:hover {
-            background: #FFD60A;
-            color: #000814;
+            background: #553C9A;
         }
         .total-row {
             font-size: 1.2em;
             font-weight: bold;
-            color: #FFC300;
+            color: #6B46C1;
         }
     </style>
 </head>

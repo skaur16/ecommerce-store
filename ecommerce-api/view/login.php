@@ -1,20 +1,27 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) session_start();
+include __DIR__ . '/header.php';
+
+// If user is already logged in, redirect to home
+if (isset($_SESSION['user_id'])) {
+    header("Location: /ecommerce-store/ecommerce-api/view/index.php");
+    exit;
+}
+
+$error = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Fetch user from DB using $_POST['email']
-    // Example:
-    // $user = getUserByEmail($_POST['email']);
-    // if ($user && password_verify($_POST['password'], $user['password'])) {
-
-    // Replace with your actual DB check:
-    if ($_POST['email'] === 'user@example.com' && $_POST['password'] === 'password123') {
-        $_SESSION['user_id'] = 1; // Replace with real user ID
-        $_SESSION['username'] = 'John Doe'; // Replace with real username
-        header("Location: index.php");
+    require_once '../models/User.php';
+    $user = new User();
+    
+    $email = $_POST['email'] ?? '';
+    $password = $_POST['password'] ?? '';
+    
+    if ($user->login($email, $password)) {
+        header("Location: /ecommerce-store/ecommerce-api/view/index.php");
         exit;
     } else {
-        $error = "Invalid email or password.";
+        $error = "Invalid email or password";
     }
 }
 ?>
@@ -22,110 +29,149 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - BookStore</title>
     <style>
         body {
+            margin: 0;
+            padding: 0;
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: #000814;
-            color: #FFD60A;
-            padding: 20px;
+            background: #f5f5f5;
+            min-height: 100vh;
         }
-        .container {
+
+        .login-container {
             max-width: 400px;
-            margin: 40px auto 0 auto;
-            background: #001d3d;
-            padding: 28px 24px 24px 24px;
+            margin: 40px auto;
+            padding: 30px;
+            background: #ffffff;
             border-radius: 12px;
-            box-shadow: 0 2px 16px rgba(0,8,20,0.18);
-            color: #FFD60A;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
-        h2 {
-            color: #FFC300;
-            margin-bottom: 18px;
+
+        .login-title {
+            color: #6B46C1;
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 15px;
         }
-        input[type="email"], input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0 18px 0;
-            border-radius: 6px;
-            border: 1.5px solid #FFC300;
-            background: #003566;
-            color: #FFD60A;
-            font-size: 1em;
+
+        .login-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: #6B46C1;
+            border-radius: 2px;
         }
-        input[type="email"]:focus, input[type="password"]:focus {
-            outline: none;
-            border-color: #FFD60A;
-            background: #001d3d;
+
+        .form-group {
+            margin-bottom: 20px;
         }
-        input[type="submit"], button {
-            padding: 10px 20px;
-            background: #FFC300;
-            color: #001d3d;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1em;
-            transition: background 0.2s, color 0.2s;
-        }
-        input[type="submit"]:hover, button:hover {
-            background: #FFD60A;
-            color: #000814;
-        }
-        .error {
-            color: #FF4C4C;
-            background: #1a1a1a;
-            border-left: 4px solid #FF4C4C;
-            padding: 8px 12px;
-            border-radius: 4px;
-            margin-bottom: 12px;
-        }
-        .success {
-            color: #28a745;
-            background: #1a1a1a;
-            border-left: 4px solid #28a745;
-            padding: 8px 12px;
-            border-radius: 4px;
-            margin-bottom: 12px;
-        }
-        a {
-            color: #FFD60A;
-            text-decoration: underline;
-        }
-        a:hover {
-            color: #FFC300;
-        }
-        label {
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
             font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #6B46C1;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(107, 70, 193, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: #6B46C1;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #553C9A;
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            color: #dc3545;
+            background: #fff;
+            padding: 10px;
+            border: 1px solid #dc3545;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .signup-link a {
+            color: #6B46C1;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Login</h2>
-
-        <?php if (!empty($error)): ?>
-            <p class="error"><?= htmlspecialchars($error) ?></p>
+    <div class="login-container">
+        <h1 class="login-title">Sign In</h1>
+        
+        <?php if ($error !== null): ?>
+            <div class="error-message"><?= $error ?></div>
         <?php endif; ?>
 
-        <?php if (!empty($success)): ?>
-            <p class="success"><?= htmlspecialchars($success) ?></p>
-        <?php endif; ?>
         <form action="/ecommerce-store/ecommerce-api/view/index.php" method="POST">
-            <label>Email:</label>
-            <input type="email" name="email" required>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
 
-            <label>Password:</label>
-            <input type="password" name="password" required>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
 
-            <input type="submit" value="Login">
+            <button type="submit" class="submit-btn">Sign In</button>
         </form>
-    </div>
 
-    <p style="text-align:center; margin-top:18px;">
-        Don't have an account? <a href="signup.php">Sign up here</a>.
-    </p>
+        <div class="signup-link">
+            Don't have an account? <a href="/ecommerce-store/ecommerce-api/view/signup.php">Sign Up</a>
+        </div>
+    </div>
 </body>
 </html>

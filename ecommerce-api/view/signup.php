@@ -1,135 +1,152 @@
 <?php
-session_start();
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Example: Save user to DB and get their ID and username
-    // Replace the next two lines with your actual DB logic
-    $newUserId = 123; // Example: the new user's ID from your DB
-    $newUsername = $_POST['username'];
-
-    // Set session variables
-    $_SESSION['user_id'] = $newUserId;
-    $_SESSION['username'] = $newUsername;
-
-    // Redirect to home or dashboard
-    header("Location: login.php");
-    exit;
-}
+if (session_status() === PHP_SESSION_NONE) session_start();
+include __DIR__ . '/header.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <title>Sign Up</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: #000814;
-            color: #FFD60A;
-            padding: 20px;
-        }
-        .container {
-            max-width: 420px;
-            margin: 40px auto 0 auto;
-            background: #001d3d;
-            padding: 28px 24px 24px 24px;
-            border-radius: 12px;
-            box-shadow: 0 2px 16px rgba(0,8,20,0.18);
-            color: #FFD60A;
-        }
-        h1 {
-            color: #FFC300;
-            text-align: center;
-            margin-bottom: 22px;
-        }
-        label {
-            font-weight: 500;
-        }
-        input[type="text"], input[type="email"], input[type="password"], textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0 18px 0;
-            border-radius: 6px;
-            border: 1.5px solid #FFC300;
-            background: #003566;
-            color: #FFD60A;
-            font-size: 1em;
-            resize: vertical;
-        }
-        input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, textarea:focus {
-            outline: none;
-            border-color: #FFD60A;
-            background: #001d3d;
-        }
-        input[type="submit"], button {
-            padding: 10px 20px;
-            background: #FFC300;
-            color: #001d3d;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1em;
-            transition: background 0.2s, color 0.2s;
-        }
-        input[type="submit"]:hover, button:hover {
-            background: #FFD60A;
-            color: #000814;
-        }
-        .error {
-            color: #FF4C4C;
-            background: #1a1a1a;
-            border-left: 4px solid #FF4C4C;
-            padding: 8px 12px;
-            border-radius: 4px;
-            margin-bottom: 12px;
-        }
-        .success {
-            color: #28a745;
-            background: #1a1a1a;
-            border-left: 4px solid #28a745;
-            padding: 8px 12px;
-            border-radius: 4px;
-            margin-bottom: 12px;
-        }
-        a {
-            color: #FFD60A;
-            text-decoration: underline;
-        }
-        a:hover {
-            color: #FFC300;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Sign Up</h1>
+<style>
+    .signup-container {
+        max-width: 500px;
+        margin: 40px auto;
+        padding: 30px;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
 
-        <?php if (!empty($error)) echo "<p class='error'>".htmlspecialchars($error)."</p>"; ?>
-        <?php if (!empty($success)) echo "<p class='success'>".htmlspecialchars($success)."</p>"; ?>
+    .signup-title {
+        color: #6B46C1;
+        text-align: center;
+        font-size: 2em;
+        margin-bottom: 30px;
+        position: relative;
+        padding-bottom: 15px;
+    }
 
-        <form action="/ecommerce-store/ecommerce-api/view/signup.php" method="POST">
-            <label>Username: </label>
-            <input type="text" name="username" required>
+    .signup-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 3px;
+        background: #6B46C1;
+        border-radius: 2px;
+    }
 
-            <label>Email: </label>
-            <input type="email" name="email" required>
+    .form-group {
+        margin-bottom: 20px;
+    }
 
-            <label>Password: </label>
-            <input type="password" name="password" required>
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-weight: 500;
+    }
 
-            <label>Shipping Address: </label>
-            <textarea name="shippingAddress" required></textarea>
+    .form-group input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 1em;
+        transition: all 0.3s ease;
+    }
 
-            <input type="submit" value="Sign Up">
-        </form>
+    .form-group input:focus {
+        border-color: #6B46C1;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(107, 70, 193, 0.1);
+    }
 
-        <p style="text-align:center; margin-top:18px;">
-            Already have an account? <a href="login.php">Login here</a>.
-        </p>
+    .submit-btn {
+        width: 100%;
+        padding: 12px;
+        background: #6B46C1;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .submit-btn:hover {
+        background: #553C9A;
+        transform: translateY(-2px);
+    }
+
+    .submit-btn:active {
+        transform: translateY(0);
+    }
+
+    .login-link {
+        text-align: center;
+        margin-top: 20px;
+        color: #666;
+    }
+
+    .login-link a {
+        color: #6B46C1;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .login-link a:hover {
+        text-decoration: underline;
+    }
+
+    .error-message {
+        color: #dc3545;
+        background: #f8d7da;
+        padding: 10px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+</style>
+
+<div class="signup-container">
+    <h1 class="signup-title">Create Account</h1>
+    
+    <?php if (isset($_SESSION['error'])): ?>
+        <div class="error-message">
+            <?= htmlspecialchars($_SESSION['error']) ?>
+            <?php unset($_SESSION['error']); ?>
+        </div>
+    <?php endif; ?>
+
+    <form action="/ecommerce-store/ecommerce-api/view/signup.php" method="POST">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+
+        <div class="form-group">
+            <label for="address">Shipping Address</label>
+            <input type="text" id="address" name="address" required>
+        </div>
+
+        <button type="submit" class="submit-btn">Sign Up</button>
+    </form>
+
+    <div class="login-link">
+        Already have an account? <a href="/ecommerce-store/ecommerce-api/view/login.php">Sign In</a>
     </div>
-</body>
-</html>
+</div>
+
+<?php include __DIR__ . '/footer.php'; ?>
 
 

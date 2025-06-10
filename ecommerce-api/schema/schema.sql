@@ -25,9 +25,13 @@ CREATE TABLE comments (
     rating INT,
     image VARCHAR(255),
     text TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (productID) REFERENCES products(productID),
     FOREIGN KEY (userID) REFERENCES users(userID)
 );
+
+-- Add created_at column to existing comments table if it doesn't exist
+ALTER TABLE comments ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
 CREATE TABLE cart (
     cartID INT AUTO_INCREMENT PRIMARY KEY,

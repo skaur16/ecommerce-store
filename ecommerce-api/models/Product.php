@@ -8,15 +8,20 @@ class Product {
     }
 
     public function getAll() {
-        $stmt = $this->conn->prepare("SELECT * FROM $this->table");
+        $query = "SELECT * FROM products";
+        $stmt = $this->conn->prepare($query);
         $stmt->execute();
+        
         return $stmt;
     }
 
-    public function getById($id) {
-        $stmt = $this->conn->prepare("SELECT * FROM $this->table WHERE productID = ?");
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);  // Return single product as array
+    public function getProductById($id) {
+        $query = "SELECT * FROM products WHERE productID = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":id", $id);
+        $stmt->execute();
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function create($description, $image, $price, $shippingCost) {

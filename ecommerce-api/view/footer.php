@@ -1,11 +1,12 @@
+</main>
 
 <footer style="
     text-align: center;
     margin-top: 40px;
-    background: #001d3d;
-    color: #FFD60A;
+    background: #ffffff;
+    color: #333333;
     padding: 24px 0 12px 0;
-    border-top: 2px solid #FFC300;
+    border-top: 1px solid #eaeaea;
     font-size: 1.1em;
 ">
 
