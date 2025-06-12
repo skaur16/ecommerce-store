@@ -1,0 +1,280 @@
+{
+	"id": "20721912-60ad-4bc0-9712-45203b35a1c1",
+	"name": "Ecommerce API Tests",
+	"timestamp": "2025-06-12T07:58:54.959Z",
+	"collection_id": "12787959-75be93df-58f5-4bc4-835f-b2e48f566706",
+	"folder_id": 0,
+	"environment_id": "0",
+	"totalPass": 18,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2025-06-12T07:58:53.527Z",
+	"totalFail": 0,
+	"results": [
+		{
+			"id": "f12d7972-c391-4ee1-8b5d-705fd11eb3ec",
+			"name": "View Cart",
+			"url": "http://localhost/ecommerce-store/ecommerce-api/api/view_cart.php",
+			"time": 35,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is JSON": true,
+				"View cart response has cart property": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"View cart response has cart property": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				35
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is JSON": true,
+					"View cart response has cart property": true
+				}
+			]
+		},
+		{
+			"id": "e0f3026f-1d66-4a63-87af-ef17699bf8ed",
+			"name": "Login",
+			"url": "http://localhost/ecommerce-store/ecommerce-api/api/add_to_cart.php",
+			"time": 34,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is JSON": true,
+				"Login response has success property": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Login response has success property": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				34
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is JSON": true,
+					"Login response has success property": true
+				}
+			]
+		},
+		{
+			"id": "92e34817-bcb5-49e0-832c-72a9d192e2cc",
+			"name": "Add to Cart",
+			"url": "http://localhost/ecommerce-store/ecommerce-api/api/add_to_cart.php",
+			"time": 35,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is JSON": true,
+				"Add to cart response has success property": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Add to cart response has success property": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				35
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is JSON": true,
+					"Add to cart response has success property": true
+				}
+			]
+		},
+		{
+			"id": "55b50f29-0ef7-4bfd-a993-7bd1cb8ece06",
+			"name": "Remove from Cart",
+			"url": "http://localhost/ecommerce-store/ecommerce-api/api/remove_from_cart.php",
+			"time": 18,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is JSON": true,
+				"Remove from cart response has success property": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Remove from cart response has success property": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				18
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is JSON": true,
+					"Remove from cart response has success property": true
+				}
+			]
+		},
+		{
+			"id": "a85f40d2-aacf-4701-bb7d-82aba93ef35a",
+			"name": "Update Cart",
+			"url": "http://localhost/ecommerce-store/ecommerce-api/api/update_cart.php",
+			"time": 32,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is JSON": true,
+				"Update cart response has success property": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Update cart response has success property": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				32
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is JSON": true,
+					"Update cart response has success property": true
+				}
+			]
+		},
+		{
+			"id": "87ad7ea2-5486-4237-a1e4-a32eef34bc6b",
+			"name": "List Product",
+			"url": "http://localhost/ecommerce-store/ecommerce-api/api/products.php",
+			"time": 22,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response is JSON": true,
+				"Products response has products property": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response is JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Products response has products property": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				22
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response is JSON": true,
+					"Products response has products property": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 176,
+	"collection": {
+		"requests": [
+			{
+				"id": "f12d7972-c391-4ee1-8b5d-705fd11eb3ec",
+				"method": "GET"
+			},
+			{
+				"id": "e0f3026f-1d66-4a63-87af-ef17699bf8ed",
+				"method": "POST"
+			},
+			{
+				"id": "92e34817-bcb5-49e0-832c-72a9d192e2cc",
+				"method": "POST"
+			},
+			{
+				"id": "55b50f29-0ef7-4bfd-a993-7bd1cb8ece06",
+				"method": "POST"
+			},
+			{
+				"id": "a85f40d2-aacf-4701-bb7d-82aba93ef35a",
+				"method": "POST"
+			},
+			{
+				"id": "87ad7ea2-5486-4237-a1e4-a32eef34bc6b",
+				"method": "GET"
+			}
+		]
+	}
+}
