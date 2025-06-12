@@ -45,10 +45,19 @@ class Cart {
 
     public function getUserCart($userId) {
         try {
-            $query = "SELECT * FROM $this->table WHERE userID = ?";
+            $query = "SELECT 
+                c.quantity,
+                p.productID,
+                p.description,
+                p.image,
+                p.price,
+                p.shippingCost
+            FROM $this->table c 
+            INNER JOIN products p ON c.productID = p.productID 
+            WHERE c.userID = ?";
             $stmt = $this->conn->prepare($query);
             $stmt->execute([$userId]);
-            return $stmt;
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Database error in getUserCart: " . $e->getMessage());
             return false;
@@ -58,11 +67,13 @@ class Cart {
     public function updateQuantity($userId, $productId, $quantity) {
         try {
             if ($quantity <= 0) {
+                error_log("Removing item: userId=$userId, productId=$productId");
                 return $this->removeItem($userId, $productId);
             }
             $query = "UPDATE $this->table SET quantity = ? WHERE userID = ? AND productID = ?";
             $stmt = $this->conn->prepare($query);
             $result = $stmt->execute([$quantity, $userId, $productId]);
+            error_log("Updating cart: userId=$userId, productId=$productId, quantity=$quantity, result=" . ($result ? 'OK' : 'FAIL'));
             if (!$result) {
                 error_log("Error updating quantity: " . print_r($stmt->errorInfo(), true));
                 return false;

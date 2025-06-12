@@ -290,8 +290,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
         <!-- <p style="color:#6B46C1; font-weight:bold;">$<?= number_format($product['price'], 2) ?></p> -->
         <form method="post" action="index.php">
             <input type="hidden" name="product_id" value="<?= $product['productID'] ?>" />
-            <!-- <input type="number" name="quantity" value="1" min="1" /> -->
-            <!-- <input type="submit" name="add_to_cart" value="Add to Cart" /> -->
+            <input type="number" name="quantity" value="1" min="1" />
+            <input type="submit" name="add_to_cart" value="Add to Cart" />
         </form>
     </div>
     <?php endforeach; ?>

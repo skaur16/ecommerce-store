@@ -21,8 +21,8 @@ if (isset($_SESSION['user_id'])) {
     // Logged-in user: count unique items from database
     $cartItems = $cartModel->getUserCart($_SESSION['user_id']);
     if ($cartItems) {
-        // Count number of rows (unique products)
-        $cartCount = $cartItems->rowCount();
+        // Count number of items
+        $cartCount = count($cartItems);
     }
 } else {
     // Guest user: count unique items from session

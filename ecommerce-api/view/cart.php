@@ -17,6 +17,7 @@ if (!isset($_SESSION['guest_cart'])) {
 
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    error_log('CART POST: ' . print_r($_POST, true));
     $productId = intval($_POST['product_id'] ?? 0);
     $quantity = max(1, intval($_POST['quantity'] ?? 1));
     if (isset($_POST['update_quantity'])) {
@@ -46,65 +47,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Fetch cart items
 $cartItems = [];
 $total = 0;
-$debug = [];
 if (isset($_SESSION['user_id'])) {
-    $query = "SELECT 
-        c.quantity AS cart_quantity, 
-        p.productID, 
-        p.description, 
-        p.image, 
-        p.price, 
-        p.shippingCost
-    FROM cart c
-    INNER JOIN products p ON c.productID = p.productID
-    WHERE c.userID = :userId";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(':userId', $_SESSION['user_id'], PDO::PARAM_INT);
-    $stmt->execute();
-    $cartItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $debug['query'] = $query;
-    $debug['user_id'] = $_SESSION['user_id'];
-    $debug['cartItems'] = $cartItems;
-} else if (!empty($_SESSION['guest_cart'])) {
-    $productIds = array_keys($_SESSION['guest_cart']);
-    $placeholders = implode(',', array_fill(0, count($productIds), '?'));
-    $query = "SELECT * FROM products WHERE productID IN ($placeholders)";
-    $stmt = $db->prepare($query);
-    $stmt->execute($productIds);
-    $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    foreach ($products as $product) {
-        $product['cart_quantity'] = $_SESSION['guest_cart'][$product['productID']];
-        $cartItems[] = $product;
+    // Logged-in user: fetch from DB
+    $cartData = $cartModel->getUserCart($_SESSION['user_id']);
+    if ($cartData) {
+        foreach ($cartData as $item) {
+            $cartItems[] = [
+                'productID' => $item['productID'],
+                'description' => $item['description'],
+                'image' => $item['image'],
+                'price' => $item['price'],
+                'shippingCost' => $item['shippingCost'],
+                'cart_quantity' => $item['quantity'],
+            ];
+        }
     }
-    $debug['guest_cart'] = $_SESSION['guest_cart'];
-    $debug['products'] = $products;
-    $debug['cartItems'] = $cartItems;
+} else if (!empty($_SESSION['guest_cart'])) {
+    // Guest user: fetch from session
+    $productIds = array_keys($_SESSION['guest_cart']);
+    if (count($productIds) > 0) {
+        $placeholders = implode(',', array_fill(0, count($productIds), '?'));
+        $query = "SELECT * FROM products WHERE productID IN ($placeholders)";
+        $stmt = $db->prepare($query);
+        $stmt->execute($productIds);
+        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($products as $product) {
+            $cartItems[] = [
+                'productID' => $product['productID'],
+                'description' => $product['description'],
+                'image' => $product['image'],
+                'price' => $product['price'],
+                'shippingCost' => $product['shippingCost'],
+                'cart_quantity' => $_SESSION['guest_cart'][$product['productID']],
+            ];
+        }
+    }
 }
-// Output debug info in HTML comments
-echo "<!--\nDEBUG INFO:\n";
-print_r($debug);
-echo "\n-->";
 
-echo "<!-- RAW CART ITEMS: ";
-print_r($cartItems);
-echo " -->";
-// Ultimate defensive filter for cart items
-$cartItems = array_filter($cartItems, function($item) {
-    return is_array($item)
-        && isset($item['price'])
-        && isset($item['cart_quantity'])
-        && isset($item['description'])
-        && isset($item['image'])
-        && isset($item['productID']);
-});
-echo "<!-- FILTERED CART ITEMS: ";
-print_r($cartItems);
-echo " -->";
-
-// Filter out items with missing product info (e.g., description or price is null)
-$cartItems = array_filter($cartItems, function($item) {
-    return !empty($item['description']) && !empty($item['price']);
-});
+// Calculate total
+foreach ($cartItems as &$item) {
+    if (!isset($item['cart_quantity']) || $item['cart_quantity'] < 1) {
+        $item['cart_quantity'] = 1;
+    }
+    $total += $item['price'] * $item['cart_quantity'];
+}
+unset($item); // break reference
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -222,7 +209,7 @@ $cartItems = array_filter($cartItems, function($item) {
 <?php include __DIR__ . '/header.php'; ?>
 <div class="cart-container">
     <h1>Your Shopping Cart</h1>
-    <?php if (empty($cartItems)): ?>
+    <?php if (count($cartItems) === 0): ?>
         <div class="empty-cart">
             <p>Your cart is empty.</p>
             <p><a href="products.php">Browse our products</a> to add items to your cart.</p>
@@ -240,35 +227,22 @@ $cartItems = array_filter($cartItems, function($item) {
                 </tr>
             </thead>
             <tbody>
-                <?php $total = 0; foreach ($cartItems as $item): ?>
-                <?php
-                    if (!is_array($item) ||
-                        !isset($item['price'], $item['cart_quantity'], $item['description'], $item['image'], $item['productID'])) {
-                        continue;
-                    }
-                    $price = $item['price'];
-                    $qty = $item['cart_quantity'];
-                    $desc = $item['description'];
-                    $img = $item['image'];
-                    $pid = $item['productID'];
-                    $subtotal = $price * $qty;
-                    $total += $subtotal;
-                ?>
+                <?php foreach ($cartItems as $item): ?>
                 <tr>
-                    <td><img src="<?= htmlspecialchars($img) ?>" alt="<?= htmlspecialchars($desc) ?>" /></td>
-                    <td><?= htmlspecialchars($desc) ?></td>
-                    <td>$<?= number_format($price, 2) ?></td>
+                    <td><img src="<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['description']) ?>" /></td>
+                    <td><?= htmlspecialchars($item['description']) ?></td>
+                    <td>$<?= number_format($item['price'], 2) ?></td>
                     <td>
                         <form method="post" action="cart.php" style="display:inline;">
-                            <input type="hidden" name="product_id" value="<?= $pid ?>" />
-                            <input type="number" name="quantity" value="<?= $qty ?>" min="1" />
+                            <input type="hidden" name="product_id" value="<?= $item['productID'] ?>" />
+                            <input type="number" name="quantity" value="<?= isset($item['cart_quantity']) ? $item['cart_quantity'] : 1 ?>" min="1" />
                             <button type="submit" name="update_quantity">Update</button>
                         </form>
                     </td>
-                    <td>$<?= number_format($subtotal, 2) ?></td>
+                    <td>$<?= number_format($item['price'] * (isset($item['cart_quantity']) ? $item['cart_quantity'] : 1), 2) ?></td>
                     <td>
                         <form method="post" action="cart.php" style="display:inline;">
-                            <input type="hidden" name="product_id" value="<?= $pid ?>" />
+                            <input type="hidden" name="product_id" value="<?= $item['productID'] ?>" />
                             <button type="submit" name="remove_item" onclick="return confirm('Remove this item?');">Remove</button>
                         </form>
                     </td>
