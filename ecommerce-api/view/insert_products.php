@@ -122,6 +122,7 @@ try {
     }
 
     echo "Products inserted successfully!";
+    
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }

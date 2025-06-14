@@ -100,4 +100,9 @@ class Cart {
             return false;
         }
     }
+
+       public function clearUserCart($userId) {
+        $stmt = $this->conn->prepare("DELETE FROM cart WHERE userID = :userID");
+        return $stmt->execute([':userID' => $userId]);
+    }
 }

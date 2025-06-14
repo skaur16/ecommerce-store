@@ -158,6 +158,8 @@ if (isset($_SESSION['user_id'])) {
                 <a href="/ecommerce-store/ecommerce-api/view/index.php" class="logo">BookStore</a>
                 <a href="/ecommerce-store/ecommerce-api/view/products.php" class="nav-link">Products</a>
                 <a href="/ecommerce-store/ecommerce-api/view/comments.php" class="nav-link">Reviews</a>
+                    <a href="/ecommerce-store/ecommerce-api/view/order.php" class="btn">Orders</a>
+
             </div>
 
             <div class="nav-center">
@@ -170,6 +172,9 @@ if (isset($_SESSION['user_id'])) {
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <a href="/ecommerce-store/ecommerce-api/view/index.php?logout=1" class="logout-link">Logout</a>
                 <?php else: ?>
+
+
+                    
                     <a href="/ecommerce-store/ecommerce-api/view/login.php" class="nav-link">Sign In</a>
                 <?php endif; ?>
                 
