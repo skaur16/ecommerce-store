@@ -134,7 +134,7 @@ $orderItems = $itemsStmt->fetchAll();
     </table>
 
     <a href="/ecommerce-store/ecommerce-api/view/index.php" class="btn">Back to Home</a>
-    <a href="download_receipt.php?order_id=<?= urlencode($order['orderID']) ?>" class="btn download-btn">Download Receipt</a>
+
 </div>
 
 <?php include __DIR__ . '/footer.php'; ?>
